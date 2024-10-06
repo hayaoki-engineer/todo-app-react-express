@@ -10,11 +10,14 @@ type TodoTypes = {
 
 type AddTodoType = {
   todo: string;
-}
+  editTodoName: string;
+};
 
 function App() {
-  const { register, handleSubmit } = useForm<AddTodoType>()
+  const { register, handleSubmit, reset } = useForm<AddTodoType>()
   const [todos, setTodos] = useState<TodoTypes[]>([]);
+   const [isEdit, setIsEdit] = useState({ id: "", todo: "" });
+
 
   const addTodo = async (event: AddTodoType) => {
     const { todo } = event
@@ -57,6 +60,28 @@ function App() {
       });
   }
 
+   const editTodo = async ({ editTodoName }: AddTodoType) => {
+     await axios
+       .put("http://localhost:3000/update", {
+         data: {
+           id: isEdit.id,
+           todo: editTodoName,
+         },
+       })
+       .then((response) => {
+         console.log(response.data);
+         const newTodos = todos.map((todo) => {
+           return todo.id === response.data.id ? response.data : todo;
+         });
+         setIsEdit({ id: "", todo: "" });
+         setTodos(newTodos);
+         reset();
+       })
+       .catch((e) => {
+         console.log(e.message);
+       });
+   };
+
   // サーバーにGETリクエストを送信
   useEffect(() => {
     axios
@@ -72,16 +97,31 @@ function App() {
     <>
       <form onSubmit={handleSubmit(addTodo)}>
         <input {...register("todo")} type="text" />
-        <button type='submit'>add</button>
+        <button type="submit">add</button>
       </form>
       {todos.map((todo) => (
         <div key={todo.id} style={{ display: "flex" }}>
-          <p>{todo.todo}</p>
+          {isEdit.id === todo.id ? (
+            <form onSubmit={handleSubmit(editTodo)}>
+              <input {...register("editTodoName")} type="text" />
+              <button>send</button>
+            </form>
+          ) : (
+            <>
+              <p>{todo.todo}</p>
+              <button
+                onClick={() => setIsEdit({ id: todo.id, todo: todo.todo })}
+              >
+                edit
+              </button>
+            </>
+          )}
+
           <button onClick={() => deleteTodo(todo.id)}>delete</button>
         </div>
       ))}
     </>
-  )
+  );
 }
 
 export default App

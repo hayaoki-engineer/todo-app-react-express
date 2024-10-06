@@ -36,6 +36,13 @@ app.delete("/delete", (req: Request, res: Response) => {
   return res.status(200).json({ message: "success" })
 })
 
+app.put("/update", (req: Request, res: Response) => {
+  console.log("putリクエストを受け付けました。");
+  console.log(req.body.data);
+  const { id, todo } = req.body.data;
+  return res.status(200).json({ id, todo });
+});
+
 try {
   app.listen(PORT, () => {
     console.log(`server runnning at://localhost:${PORT}`);
