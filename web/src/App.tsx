@@ -1,16 +1,43 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
+import { useForm } from 'react-hook-form';
 
 type TodoTypes = {
   id: string;
   todo: string;
 };
 
+type AddTodoType = {
+  todo: string;
+}
+
 function App() {
+  const { register, handleSubmit } = useForm<AddTodoType>()
   const [todos, setTodos] = useState<TodoTypes[]>([]);
 
-  // バックエンドのサーバーにGETリクエストを送信
+  const addTodo = async (event: AddTodoType) => {
+    const { todo } = event
+    console.log(todo);
+    // サーバーにPOSTリクエストを送信;
+    await axios
+      .post("http://localhost:3000/add", {
+        data: {
+          todo,
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+        // 新しいTODOを取得
+        const todo = response.data;
+        setTodos((preTodos) => [todo, ...preTodos]);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  // サーバーにGETリクエストを送信
   useEffect(() => {
     axios
       .get("http://localhost:3000")
@@ -23,6 +50,10 @@ function App() {
 
   return (
     <>
+      <form onSubmit={handleSubmit(addTodo)}>
+        <input {...register("todo")} type="text" />
+        <button type='submit'>add</button>
+      </form>
       {todos.map((todo) => (
         <p key={todo.id}>{todo.todo}</p>
       ))}
