@@ -15,7 +15,7 @@ app.get("/", (req: Request, res: Response) => {
     { id: "4", todo: "test4"},
   ]
 
-  return res.status(200).json({ message: "hello world" });
+  return res.status(200).json({ todos });
 });
 
 try {

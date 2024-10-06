@@ -1,21 +1,32 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import axios from 'axios'
 
+type TodoTypes = {
+  id: string;
+  todo: string;
+};
+
 function App() {
-  
+  const [todos, setTodos] = useState<TodoTypes[]>([]);
+
   useEffect(() => {
     axios
-      .get("http://localhost:3000") 
+      .get("http://localhost:3000")
       .then((response) => {
-        console.log(response.data.message);
-      })
-      .catch((e) => {
-        console.log(e.message);
+        console.log(response.data.todos);
+        const { todos } = response.data
+        setTodos(todos);
       });
   }, []);
 
-  return <div></div>
+  return (
+    <>
+      {todos.map((todo) => (
+        <p key={todo.id}>{todo.todo}</p>
+      ))}
+    </>
+  )
 }
 
 export default App
