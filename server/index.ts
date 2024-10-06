@@ -30,6 +30,12 @@ app.post("/add", (req: Request, res: Response) => {
   return res.status(200).json({ id: uidValue, todo })
 })
 
+app.delete("/delete", (req: Request, res: Response) => {
+  console.log("deleteリクエストを受け付けました");
+  console.log(req.body.id);
+  return res.status(200).json({ message: "success" })
+})
+
 try {
   app.listen(PORT, () => {
     console.log(`server runnning at://localhost:${PORT}`);

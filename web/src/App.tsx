@@ -37,6 +37,26 @@ function App() {
       });
   }
 
+  const deleteTodo = async (id: string) => {
+    console.log(id);
+
+    await axios
+      .delete("http://localhost:3000/delete", {
+        data: {
+          id,
+        },
+      })
+      .then((response) => {
+        console.log(response)
+        const newTodos = todos.filter((todo) => todo.id !== id);
+        setTodos(newTodos);
+      })
+      .catch((e) => {
+        console.log(e.message);
+        setTodos(todos);
+      });
+  }
+
   // サーバーにGETリクエストを送信
   useEffect(() => {
     axios
@@ -55,7 +75,10 @@ function App() {
         <button type='submit'>add</button>
       </form>
       {todos.map((todo) => (
-        <p key={todo.id}>{todo.todo}</p>
+        <div key={todo.id} style={{ display: "flex" }}>
+          <p>{todo.todo}</p>
+          <button onClick={() => deleteTodo(todo.id)}>delete</button>
+        </div>
       ))}
     </>
   )
