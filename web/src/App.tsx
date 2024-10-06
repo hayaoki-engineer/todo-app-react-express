@@ -10,6 +10,7 @@ type TodoTypes = {
 function App() {
   const [todos, setTodos] = useState<TodoTypes[]>([]);
 
+  // バックエンドのサーバーにGETリクエストを送信
   useEffect(() => {
     axios
       .get("http://localhost:3000")
